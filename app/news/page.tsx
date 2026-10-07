@@ -15,25 +15,19 @@ export default function News() {
     const [prev, setPrev] = useState(0);
     const [next, setNext] = useState(paginate);
     const [asc, setAsc] = useState(false);
+    const caseSensi = isDebouce.trim().toLowerCase();
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsDebounce(search);
-        }, 300);
+        }, 500);
 
         return () => clearTimeout(timer);
     }, [search]);
 
-    const { data, error, isLoading, isError } = useQuery({
-        queryKey: ["news", isDebouce],
-        queryFn: () => {
-            const caseSensi = isDebouce.toLowerCase();
-            const ok = search.localeCompare(caseSensi, undefined, { sensitivity: "base" });
-            if (ok !== 0) {
-                throw new Error("Search mismatch");
-            }
-            return getNews(isDebouce);
-        },
+    const { data, error, isLoading, isError, isFetching } = useQuery({
+        queryKey: ["news", caseSensi],
+        queryFn: () => getNews(caseSensi),
         staleTime : 5 * 60 * 1000,
         gcTime: 5 * 60 * 1000
     })
@@ -60,8 +54,9 @@ export default function News() {
         <div>
             <br />
             <div>
-                <h1>Search</h1>
-                <input placeholder="Hemlo" value={search} onChange={(e) => setSearch(e.target.value)} />
+                <input placeholder="News search" value={search} onChange={(e) => setSearch(e.target.value)} />
+                <button onClick={() => setIsDebounce(search)}>Search</button>
+                {isFetching && <span>Searching....</span>}
             </div>
             <br />
             <h1>Articles</h1>
