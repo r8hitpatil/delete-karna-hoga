@@ -6,36 +6,16 @@ import Link from "next/link"
 import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/toast";
 import ErrorNews from "../component/error-news";
+import SearchNews from "../component/search-news";
+import { useNewsStore } from "@/app/store/newsStore";
 
 export default function News() {
 
+    const searchNews = useNewsStore((state) => state.searchNews);
     const paginate = 5;
-    const [isDebouce, setIsDebounce] = useState("");
-    const [search, setSearch] = useState("");
     const [prev, setPrev] = useState(0);
     const [next, setNext] = useState(paginate);
     const [asc, setAsc] = useState(false);
-    const caseSensi = isDebouce.trim().toLowerCase();
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsDebounce(search);
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [search]);
-
-    const { data, error, isLoading, isError, isFetching } = useQuery({
-        queryKey: ["news", caseSensi],
-        queryFn: () => getNews(caseSensi),
-        staleTime : 5 * 60 * 1000,
-        gcTime: 5 * 60 * 1000
-    })
-
-    if (isLoading) return <p>Loading...</p>
-    if (isError) return <ErrorNews/>
-
-    const { articles } = data;
 
     function popUp() {
         {
@@ -54,25 +34,11 @@ export default function News() {
         <div>
             <br />
             <div>
-                <input placeholder="News search" value={search} onChange={(e) => setSearch(e.target.value)} />
-                <button onClick={() => setIsDebounce(search)}>Search</button>
-                {isFetching && <span>Searching....</span>}
+                <SearchNews />
+                {/* {isFetching && <span>Searching....</span>} */}
             </div>
             <br />
             <h1>Articles</h1>
-            <br />
-            <div>
-                <h1>-------------------------------------</h1>
-                <h1>No sort simple mapping </h1>
-                <h1>-------------------------------------</h1>
-            </div>
-            {articles.slice(next - paginate, next).map((article: any) => {
-                return (
-                    <div key={article.title}>
-                        <Link href={`/news/${encodeURIComponent(article.title)}`} prefetch={false}>{article.title}</Link>
-                    </div>
-                )
-            })}
             <div>
                 <h1>-------------------------------------</h1>
                 <button onClick={() => {
@@ -81,23 +47,24 @@ export default function News() {
                 }}>Ascending</button>
                 <h1>-------------------------------------</h1>
             </div>
-            {
-                asc ? articles.slice(next - paginate, next).sort((a: any, b: any) => -a.publishedAt.localeCompare(b.publishedAt)).map((article: any) => {
-                    return (
-                        <div key={article.title}>
-                            <Link href={`/news/${encodeURIComponent(article.title)}`} prefetch={false}>{article.title}</Link>
-                        </div>
-                    )
-                }) :
-                    articles.slice(next - paginate, next).sort((a: any, b: any) => a.publishedAt.localeCompare(b.publishedAt)).map((article: any) => {
-                        return (
-                            <div key={article.title}>
-                                <Link href={`/news/${encodeURIComponent(article.title)}`} prefetch={false}>{article.title}</Link>
-                            </div>
-                        )
-                    })
-            }
             <br />
+            <div>
+                {asc ? searchNews.slice(next-5,next).sort((a: any, b: any) => -a.publishedAt.localeCompare(b.publishedAt)).map((e) => (
+                    <div>
+                        <Link href={`/news/${e.title}`} prefetch={false}>{e.title}</Link>
+                    </div>
+                )) : searchNews.slice(next-5,next).sort((a: any, b: any) => a.publishedAt.localeCompare(b.publishedAt)).map((e) => (
+                    <div>
+                        <Link href={`/news/${e.title}`} prefetch={false}>{e.title}</Link>
+                    </div>
+                ))}
+            </div>
+            <div>
+                <h1>Difference is here ?</h1>
+                <p>
+                    -------------------------------------------
+                </p>
+            </div>
             <div className='flex gap-5'>
                 <button onClick={() => {
                     {
@@ -110,10 +77,10 @@ export default function News() {
                 }}>Prev</button>
                 <button onClick={() => {
                     {
-                        if ((prev + 1) < Math.round(articles.length / paginate)) {
+                        if ((prev + 1) < Math.round(searchNews.length / paginate)) {
                             setPrev(prev + 1)
                             setNext(next + 5)
-                            console.log('TF', Math.ceil(articles.length / paginate))
+                            console.log('TF', Math.ceil(searchNews.length / paginate))
                         };
                         console.log('0th next', next - 5);
                         console.log('Plus', prev);
