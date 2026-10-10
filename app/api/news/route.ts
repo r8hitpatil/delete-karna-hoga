@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   const q = searchParams.get("q");
 
   const apiUrl = q 
-  ? `https://newsapi.org/v2/everything?q=${q}`
+  ? `https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}`
   : `https://newsapi.org/v2/top-headlines?country=us`
 
   const res = await fetch(apiUrl, {

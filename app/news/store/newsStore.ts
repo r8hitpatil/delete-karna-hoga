@@ -17,7 +17,7 @@ export const useNewsStore = create<NewsStore>((set) => ({
 
     fetchSearchNews: async (inp) => {
         const data = await getNews(inp);
-        const response = data.articles;
+        const response = data?.articles || [];
         set({
             searchNews: response
         })

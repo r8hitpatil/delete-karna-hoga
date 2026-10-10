@@ -54,12 +54,12 @@ export default function News() {
             <br />
             <div>
                 {asc ? searchNews.slice(next-5,next).sort((a: any, b: any) => -a.publishedAt.localeCompare(b.publishedAt)).map((e) => (
-                    <div>
-                        <Link href={`/news/${e.title}`} prefetch={false}>{e.title}</Link>
+                    <div key={e.title}>
+                        <Link href={`/news/${encodeURIComponent(e.title)}`} prefetch={false}>{e.title}</Link>
                     </div>
                 )) : searchNews.slice(next-5,next).sort((a: any, b: any) => a.publishedAt.localeCompare(b.publishedAt)).map((e) => (
                     <div>
-                        <Link href={`/news/${e.title}`} prefetch={false}>{e.title}</Link>
+                        <Link href={`/news/${encodeURIComponent(e.title)}`} prefetch={false}>{e.title}</Link>
                     </div>
                 ))}
             </div>

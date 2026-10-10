@@ -39,7 +39,7 @@ export default function NewsDetails() {
     return (
         <div>
             {searchNewsArr.map((e) => (
-                <div>
+                <div key={e.title}>
                     <h1>Description</h1>
                     <p>{e.title}</p>
                     <p>{e.description}</p>
