@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getNews } from '../lib/utils';
+import { getNews } from '../../lib/utils';
 
 type News = {
     title : string;

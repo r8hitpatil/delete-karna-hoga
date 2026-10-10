@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { getNews } from "../lib/utils";
-import { useNewsStore } from "../store/newsStore";
+import { useNewsStore } from "../news/store/newsStore";
 
 export default function SearchNews(){
 

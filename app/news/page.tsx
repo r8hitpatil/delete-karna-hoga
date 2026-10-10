@@ -7,7 +7,8 @@ import { useEffect, useState } from "react";
 import { toast } from "@/components/ui/toast";
 import ErrorNews from "../component/error-news";
 import SearchNews from "../component/search-news";
-import { useNewsStore } from "@/app/store/newsStore";
+import { useNewsStore } from "@/app/news/store/newsStore";
+import { logout } from "../auth/actions";
 
 export default function News() {
 
@@ -32,6 +33,9 @@ export default function News() {
 
     return (
         <div>
+            <div>
+                <button onClick={async () => { await logout() }}>Logout</button>
+            </div>
             <br />
             <div>
                 <SearchNews />
