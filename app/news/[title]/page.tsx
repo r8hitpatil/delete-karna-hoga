@@ -33,22 +33,25 @@ export default function NewsDetails() {
     },[title,searchNews,router]);
 
     if(!isAuthenticated){
-        return <div>Checking authententication....</div>
+        return (
+            <div className="min-h-screen flex items-center justify-center text-sm font-medium text-muted-foreground animate-pulse">
+                Checking authentication...
+            </div>
+        );
     }
 
     return (
-        <div>
+        <div className="min-h-screen bg-background text-foreground py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-6">
             {searchNewsArr.map((e) => (
-                
-                <div key={e.title}>
-                    <br />
-                    <h1 className="text-xl">Title</h1>
-                    <br />
-                    <p>{e.title}</p>
-                    <br />
-                    <h1 className="text-xl">Description</h1>
-                    <br />
-                    <p>{e.description}</p>
+                <div key={e.title} className="p-6 sm:p-8 rounded-2xl border border-border bg-card shadow-sm space-y-6">
+                    <div>
+                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Title</span>
+                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mt-2 leading-snug">{e.title}</h1>
+                    </div>
+                    <div className="pt-6 border-t border-border">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Description</span>
+                        <p className="text-base text-muted-foreground mt-2 leading-relaxed">{e.description}</p>
+                    </div>
                 </div>
             ))}
         </div>
