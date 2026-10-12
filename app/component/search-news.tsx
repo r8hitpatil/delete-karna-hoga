@@ -1,35 +1,61 @@
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+'use client';
+
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useNewsStore } from "../news/store/newsStore";
-import { getNews } from "../api/news/action";
 
-export default function SearchNews() {
-    const [search, setSearch] = useState("");
-    const [isDebounce, setIsDebounce] = useState("");
-    const caseSensi = isDebounce.trim().toLowerCase();
+function SearchNewsContent() {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
+    const activeQuery = searchParams.get("q") || "";
+    const [search, setSearch] = useState(activeQuery);
+    const fetchSearchNews = useNewsStore((state) => state.fetchSearchNews);
+
+    // Sync input field if user navigates via browser back/forward
     useEffect(() => {
+        setSearch(activeQuery);
+    }, [activeQuery]);
+
+    // Function to update the URL query parameters in the address bar
+    const applySearch = (query: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        const trimmed = query.trim();
+
+        if (trimmed) {
+            params.set("q", trimmed);
+        } else {
+            params.delete("q");
+        }
+        params.delete("page"); // Reset pagination when search changes
+
+        const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+        router.push(newUrl);
+
+        // Keep Zustand store in sync for components that subscribe to it (e.g. Dashboard)
+        fetchSearchNews(trimmed);
+    };
+
+    // Debounce search input as user types
+    useEffect(() => {
+        if (search.trim() === activeQuery.trim()) return;
+
         const timer = setTimeout(() => {
-            setIsDebounce(search);
-            searchNews(search);
-        }, 300);
-        console.log(isDebounce);
+            applySearch(search);
+        }, 400);
 
         return () => clearTimeout(timer);
     }, [search]);
 
-    const { data, error, isLoading, isError, isFetching } = useQuery({
-        queryKey: ["news", caseSensi],
-        queryFn: () => getNews(caseSensi),
-        staleTime: 5 * 60 * 1000,
-        gcTime: 5 * 60 * 1000,
-    });
-
-    const searchNews = useNewsStore((state) => state.fetchSearchNews);
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        applySearch(search);
+    };
 
     return (
         <div className="w-full max-w-md">
-            <div className="flex items-center gap-2">
+            <form onSubmit={handleSubmit} className="flex items-center gap-2">
                 <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -37,17 +63,41 @@ export default function SearchNews() {
                     className="flex-1 px-4 py-2 bg-background border border-border rounded-xl text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 />
                 <button
-                    onClick={() => setIsDebounce(search)}
+                    type="submit"
                     className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 active:scale-[0.99] transition-all cursor-pointer shadow-xs"
                 >
                     Search
                 </button>
-            </div>
-            {isDebounce && (
+            </form>
+            {activeQuery && (
                 <p className="text-xs text-muted-foreground mt-1.5 px-1 truncate">
-                    Active query: <span className="font-semibold text-foreground">{isDebounce}</span>
+                    Active query: <span className="font-semibold text-foreground">{activeQuery}</span>
                 </p>
             )}
         </div>
     );
 }
+
+export default function SearchNews() {
+    return (
+        <Suspense fallback={
+            <div className="w-full max-w-md">
+                <div className="flex items-center gap-2">
+                    <input
+                        placeholder="Search news..."
+                        disabled
+                        className="flex-1 px-4 py-2 bg-background border border-border rounded-xl text-sm placeholder:text-muted-foreground/60 opacity-60"
+                    />
+                    <button
+                        disabled
+                        className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-medium text-sm opacity-60"
+                    >
+                        Search
+                    </button>
+                </div>
+            </div>
+        }>
+            <SearchNewsContent />
+        </Suspense>
+    );
+}

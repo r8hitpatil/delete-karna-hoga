@@ -1,25 +1,32 @@
 import { create } from 'zustand';
-import { getNews } from '../../api/news/action';
 
 type News = {
-    id : string;
-    title : string;
-    description : string;
-    publishedAt : Date;
+    id: string;
+    title: string;
+    description: string;
+    publishedAt: Date;
 }
 
 type NewsStore = {
-    searchNews : News[];
-    fetchSearchNews : (searchInput:string) => Promise<void>;
+    searchNews: News[];
+    fetchSearchNews: (searchInput?: string) => Promise<void>;
 }
 
 export const useNewsStore = create<NewsStore>((set) => ({
-    searchNews : [],
+    searchNews: [],
 
-    fetchSearchNews: async (inp) => {
-        const res = await getNews(inp);
-        set({
-            searchNews: res.data || [],
-        });
+    fetchSearchNews: async (inp = "") => {
+        try {
+            const query = inp.trim();
+            const url = query ? `/api/news?q=${encodeURIComponent(query)}` : `/api/news`;
+            const res = await fetch(url);
+            const json = await res.json();
+            set({
+                searchNews: json.data || [],
+            });
+        } catch (error) {
+            console.error("Error in fetchSearchNews:", error);
+            set({ searchNews: [] });
+        }
     },
 }));
