@@ -34,7 +34,9 @@ function SearchNewsContent() {
         router.push(newUrl);
 
         // Keep Zustand store in sync for components that subscribe to it (e.g. Dashboard)
-        fetchSearchNews(trimmed);
+        if(pathname.includes("/dashboard")) {
+            fetchSearchNews(trimmed);
+        }
     };
 
     // Debounce search input as user types
@@ -100,4 +102,4 @@ export default function SearchNews() {
             <SearchNewsContent />
         </Suspense>
     );
-}
+}
