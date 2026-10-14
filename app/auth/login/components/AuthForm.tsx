@@ -22,11 +22,21 @@ export function AuthForm() {
             return;
         }
 
-        const response = await login(formData);
-
-        if(!response.success) {
-            setError(response.message);
+        try {
+            if(showRegister) {
+            const regResponse = await register(formData);
+            if(!regResponse.success) {
+                setError(regResponse.message);
+                return;
+            }
         }
+           const logResponse = await login(formData);
+           if(logResponse && !logResponse.success) {
+            setError(logResponse.message)
+        }
+        } catch (error) {
+            setError("Something went wrong. Please try again.");
+       }
     }
 
     return (

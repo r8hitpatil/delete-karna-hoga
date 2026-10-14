@@ -42,7 +42,8 @@ export async function register(formData:FormData) {
 
         return {
             success : true,
-            user : { id : newUser.id , email : newUser.email }
+            user : { id : newUser.id , email : newUser.email },
+            message : "Registered users successfully"
         };
     } catch (error) {
        console.log('Registration error : ',error);
