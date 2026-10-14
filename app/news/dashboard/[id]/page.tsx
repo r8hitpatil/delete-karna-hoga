@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getCurrentUser } from "@/app/api/auth/lib/session";
 import { updateNews } from "../../../api/news/dashboard/action";
 import { getNewsById } from "../../../api/news/action";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Article = {
     id: string;
@@ -17,6 +18,7 @@ export default function UpdateArticles() {
 
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const params = useParams();
     console.log('Params', params);
@@ -64,7 +66,7 @@ export default function UpdateArticles() {
 
             <div className="p-6 sm:p-8 rounded-2xl border border-border bg-card shadow-sm space-y-4">
                 <h2 className="text-xl font-bold tracking-tight">Edit Form</h2>
-                <form key={article?.title} className="flex flex-col gap-4" action={async (formData) => { if (!article?.id) return; await updateNews(article?.id, formData); router.push("/news/dashboard"); }}>
+                <form key={article?.title} className="flex flex-col gap-4" action={async (formData) => { if (!article?.id) return; ; await updateNews(article?.id, formData) ; await queryClient.invalidateQueries({ queryKey : ["news"] }); router.push("/news/dashboard"); }}>
                     <div className="space-y-1.5">
                         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Title</span>
                         <input className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" type="text" defaultValue={article?.title} name="title" />

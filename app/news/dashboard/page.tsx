@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createNews } from "../../api/news/action";
 import { useNewsStore } from "../store/newsStore";
 import { toast } from "@/components/ui/toast";
 import Link from "next/link";
 import SearchNews from "@/app/component/search-news";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function NewsDashboard() {
 
@@ -22,6 +23,13 @@ export default function NewsDashboard() {
     }
   }
 
+  const fetchSearchNews = useNewsStore((state) => state.fetchSearchNews);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    fetchSearchNews("");
+  }, [fetchSearchNews]);
+
   const paginate = 5;
   const [prev, setPrev] = useState(0);
   const [next, setNext] = useState(paginate);
@@ -29,7 +37,6 @@ export default function NewsDashboard() {
   const [asc, setAsc] = useState(false);
 
   const searchNews = useNewsStore((state) => state.searchNews);
-  const fetchSearchNews = useNewsStore((state) => state.fetchSearchNews);
 
   return (
     <div className="min-h-screen bg-background text-foreground py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8">
@@ -43,7 +50,7 @@ export default function NewsDashboard() {
         </Link>
       </div>
       <div className="p-6 rounded-2xl border border-border bg-card shadow-xs">
-        <form className="space-y-4" action={async (formData) => { await createNews(formData); await fetchSearchNews("") }}>
+        <form className="space-y-4" action={async (formData) => { await createNews(formData); await fetchSearchNews(""); await queryClient.invalidateQueries({ queryKey : ["news"] }); }} >
           <div className="space-y-1.5">
             <h1 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Title</h1>
             <input className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" type="text" placeholder="Enter title" name="title" />
@@ -59,7 +66,6 @@ export default function NewsDashboard() {
         <h2 className="text-lg font-semibold tracking-tight">Update Articles</h2>
         <div className="pt-6 pb-4">
           <SearchNews />
-          {/* {isFetching && <span>Searching....</span>} */}
         </div>
         <div>
           <button
