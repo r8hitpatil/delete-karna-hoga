@@ -111,6 +111,12 @@ function NewsFeedContent() {
                         Feedback
                     </Link>
                     <Link
+                        href="/feedbackv2"
+                        className="px-3.5 py-1.5 rounded-xl border border-border text-sm font-medium hover:bg-muted text-foreground transition-all cursor-pointer shadow-xs"
+                    >
+                        Feedback v2
+                    </Link>
+                    <Link
                         href="/news/dashboard"
                         className="px-3.5 py-1.5 rounded-xl border border-border text-sm font-medium hover:bg-muted text-foreground transition-all cursor-pointer shadow-xs"
                     >
