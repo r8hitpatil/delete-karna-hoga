@@ -17,6 +17,7 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+  feedback Feedback[]
 }
 
 model News {
@@ -24,4 +25,17 @@ model News {
   title String @unique
   description String
   publishedAt DateTime @default(now())
+  feedback Feedback[]
+}
+
+model Feedback {
+  id String @id @default(uuid())
+  name String
+  age Int
+  email String
+  userId String
+  feedback String
+  newsId String
+  new News @relation(fields: [newsId], references: [id]) 
+  user User @relation(fields: [userId],references: [id])
 }
