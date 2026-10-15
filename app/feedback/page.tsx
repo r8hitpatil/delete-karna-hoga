@@ -23,6 +23,8 @@ export default function FeedbackPage() {
 
   const { searchNews,fetchSearchNews } = useNewsStore((state) => state);
 
+  const { reset } = useFeedBackStore((state) => state);
+
   const router = useRouter();
   
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function FeedbackPage() {
     if (res.success) {
       alert("Feedback submitted successfully!");
       router.push("/");
+      reset();
     } else {
       alert(res.message);
     }

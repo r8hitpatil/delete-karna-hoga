@@ -11,6 +11,15 @@ type feedBackForm = {
     setAge: (num:number) => void;
     setFeedback: (str:string) => void;
     setNews: (str:string) => void;
+    reset: () => void;
+}
+
+const initialState = {
+    name : "",
+    email : "",
+    age : 0,
+    feedback : "",
+    news : "",
 }
 
 export const useFeedBackStore = create<feedBackForm>((set) => ({
@@ -38,5 +47,7 @@ export const useFeedBackStore = create<feedBackForm>((set) => ({
 
     setNews: (inp:string) => {
         set({ news : inp });
-    }
+    },
+
+    reset: () => set(initialState)
 }))
